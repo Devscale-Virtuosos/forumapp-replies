@@ -2,28 +2,20 @@ import express from "express";
 import { connectDB } from "./utils/db"; // Import connectDB
 import dotenv from "dotenv";
 import replyRoutes from "./routes/reply.routes";
+import { middlewareCheckOrigin } from "./middleware/middleware.check-origin";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-const startServer = async () => {
-  try {
-    // Koneksi ke MongoDB
-    await connectDB();
+connectDB();
+app.use(middlewareCheckOrigin);
+// Menggunakan routes
+app.use("/api/replies", replyRoutes);
 
-    // Menggunakan routes
-    app.use("/api/replies", replyRoutes);
+const PORT = process.env.PORT;
 
-    // Setelah koneksi berhasil, jalankan server
-    app.listen(process.env.PORT || 3000, () => {
-      console.log(`Server running on port ${process.env.PORT || 3000}`);
-    });
-  } catch (error) {
-    // Jika koneksi gagal, jangan jalankan server
-    console.error("Failed to connect to MongoDB:", error);
-  }
-};
-
-startServer();
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
