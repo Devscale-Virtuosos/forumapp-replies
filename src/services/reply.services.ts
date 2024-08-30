@@ -1,5 +1,7 @@
 import { IReply } from "../models/replies.schema";
 import replyRepository from "../repositories/reply.repositories";
+import { env } from "../utils/env";
+import { rabbitmq } from "../utils/rabbitmq";
 
 const MAX_CONTENT_LENGTH = 250;
 
@@ -21,6 +23,12 @@ const replyServices = {
       if (newReply.content.length > MAX_CONTENT_LENGTH) {
         throw new Error("Content is too long");
       }
+
+      // send event/message to rabbitmq
+      const queue = env.ADD_REPLY_RABBITMQ_QUEUE;
+      const connection = await rabbitmq(queue);
+      connection.sendToQueue(queue, Buffer.from(JSON.stringify(newReply)));
+
       return { message: "Reply berhasil dibuat", data: newReply };
     } catch (error) {
       throw new Error("Terjadi kesalahan pada server");
@@ -44,9 +52,16 @@ const replyServices = {
   deleteReply: async (replyId: string) => {
     try {
       const deletedReply = await replyRepository.deleteReply(replyId);
+
       if (!deletedReply) {
         throw new Error("Reply not found");
       }
+
+      // send event/message to rabbitmq
+      const queue = env.DELETE_REPLY_RABBITMQ_QUEUE;
+      const connection = await rabbitmq(queue);
+      connection.sendToQueue(queue, Buffer.from(JSON.stringify(deletedReply)));
+
       return { message: "Reply berhasil dihapus", data: deletedReply };
     } catch (error) {
       throw new Error("Terjadi kesalahan pada server");
