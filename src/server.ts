@@ -12,7 +12,7 @@ app.use(express.json());
 connectDB();
 app.use(middlewareCheckOrigin);
 // Menggunakan routes
-app.use("/", replyRoutes);
+app.use("/replies", replyRoutes);
 
 const PORT = process.env.PORT;
 
