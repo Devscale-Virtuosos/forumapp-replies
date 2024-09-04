@@ -17,10 +17,10 @@ RUN pnpm install
 COPY . .
 
 # Jika Anda menggunakan TypeScript, tambahkan langkah build
-# RUN pnpm run build
+RUN pnpm run build
 
 # Menentukan port yang akan digunakan oleh aplikasi
 EXPOSE 3000
 
 # Menjalankan aplikasi
-CMD ["pnpm", "run", "dev"]
+CMD ["pnpm", "run", "start"]
