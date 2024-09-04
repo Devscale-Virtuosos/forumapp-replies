@@ -20,6 +20,6 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "build": "tsc",
-    "start": "node dist/main.js"
+    "start": "node dist/server.js"
   }
 }
